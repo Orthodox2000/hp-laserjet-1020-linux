@@ -1,0 +1,16 @@
+[Unit]
+Description=Web Services Dynamic Discovery (WSD) host daemon
+Documentation=https://github.com/christgau/wsdd
+After=network-online.target nss-lookup.target
+Wants=network-online.target
+Before=smbd.service nmbd.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/wsdd --shortlog --ipv4only
+Restart=on-failure
+RestartSec=5
+Nice=0
+
+[Install]
+WantedBy=multi-user.target
