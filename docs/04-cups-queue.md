@@ -39,6 +39,7 @@ sudo lpadmin -p "$QUEUE" -E -v "$URI" \
 ```
 
 > **Find the serial automatically:**
+>
 > ```bash
 > /usr/lib/cups/backend/usb | awk '/LaserJet.*1020/{print $2}'
 > ```
@@ -61,7 +62,7 @@ sudo grep -E '\*ShortNickName|FoomaticRIPCommandLine|cupsFilter' \
 
 For a PDF/PostScript job the pipeline is:
 
-```
+```text
 application  ─►  pdftopdf  ─►  gs  ─►  pstops  ─►  foomatic-rip  ─►  foo2zjs  ─►  usb backend  ─►  /dev/bus/usb/...
                                                             (foo2zjs-wrapper -z1 -P -L0)
 ```

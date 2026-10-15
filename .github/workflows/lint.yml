@@ -1,0 +1,55 @@
+name: lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  shellcheck:
+    name: shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint shell scripts
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: ./scripts
+          severity: warning
+
+  markdownlint:
+    name: markdownlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint markdown
+        uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          globs: "**/*.md"
+
+  firmware:
+    name: verify firmware
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check bundled firmware integrity and format
+        run: |
+          set -e
+          echo "0cd1ac3a4f6cb7995e99deffff840927  firmware/sihp1020.dl" | md5sum -c -
+          test "$(stat -c %s firmware/sihp1020.dl)" = "128999"
+          # must be the ACL/PJL envelope: starts 0x1b 0x25 (ESC '%') and carries the ACL marker
+          test "$(head -c 2 firmware/sihp1020.dl | od -An -tx1 | tr -d ' \n')" = "1b25"
+          head -c 40 firmware/sihp1020.dl | grep -aq 'ENTER LANGUAGE=ACL'
+          echo "firmware OK"
+
+  bash-syntax:
+    name: bash -n
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax check
+        run: |
+          for f in scripts/*.sh; do
+            echo "checking $f"
+            bash -n "$f"
+          done

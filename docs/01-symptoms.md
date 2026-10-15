@@ -13,7 +13,7 @@ The failure mode of a host-based HP LaserJet 1020 without firmware is unusually
    `/var/log/cups/error_log` shows the full filter chain running and the USB backend
    writing bytes:
 
-   ```
+   ```text
    [Job 6] Started filter ... (pdftopdf)
    [Job 6] Started filter ... (gs)
    [Job 6] Started filter ... (pstops)
@@ -30,12 +30,13 @@ The failure mode of a host-based HP LaserJet 1020 without firmware is unusually
 4. **`usb_printerid` / the device ID has no `FWVER`.**
    This is the smoking gun:
 
-   ```
+   ```text
    MFG:Hewlett-Packard;MDL:HP LaserJet 1020;CMD:ACL;CLS:PRINTER;DES:HP LaserJet 1020;
    ```
+
    Compare with a *loaded* printer:
 
-   ```
+   ```text
    MFG:Hewlett-Packard;MDL:HP LaserJet 1020;CMD:ACL;CLS:PRINTER;DES:HP LaserJet 1020;FWVER:20080222;
    ```
 

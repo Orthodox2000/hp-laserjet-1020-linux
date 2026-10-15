@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="330" viewBox="0 0 1240 330" role="img" aria-label="CUPS print pipeline">
+  <defs>
+    <linearGradient id="pg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#eef2f7"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect width="1240" height="330" fill="#f8fafc"/>
+  <text x="620" y="46" text-anchor="middle" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="26" font-weight="700" fill="#0f172a">The Linux print pipeline (all stock software)</text>
+  <text x="620" y="74" text-anchor="middle" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="16" fill="#64748b">no custom driver — the community foo2zjs driver does the rendering</text>
+
+  <g font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="17" font-weight="600" fill="#0f172a" text-anchor="middle">
+    <!-- boxes -->
+    <g>
+      <rect x="30" y="120" width="150" height="80" rx="12" fill="url(#pg)" stroke="#94a3b8" stroke-width="2"/>
+      <text x="105" y="156">Application</text>
+      <text x="105" y="180" font-size="14" font-weight="400" fill="#64748b">PDF / text</text>
+    </g>
+    <g>
+      <rect x="220" y="120" width="150" height="80" rx="12" fill="url(#pg)" stroke="#94a3b8" stroke-width="2"/>
+      <text x="295" y="156">pdftopdf</text>
+      <text x="295" y="180" font-size="14" font-weight="400" fill="#64748b">+ Ghostscript</text>
+    </g>
+    <g>
+      <rect x="410" y="120" width="150" height="80" rx="12" fill="url(#pg)" stroke="#94a3b8" stroke-width="2"/>
+      <text x="485" y="156">foomatic-rip</text>
+      <text x="485" y="180" font-size="14" font-weight="400" fill="#64748b">PPD options</text>
+    </g>
+    <g>
+      <rect x="600" y="120" width="180" height="80" rx="12" fill="#dbeafe" stroke="#60a5fa" stroke-width="2"/>
+      <text x="690" y="152">foo2zjs-wrapper</text>
+      <text x="690" y="176" font-size="14" font-weight="400" fill="#334155">-z1 -P -L0</text>
+    </g>
+    <g>
+      <rect x="820" y="120" width="170" height="80" rx="12" fill="url(#pg)" stroke="#94a3b8" stroke-width="2"/>
+      <text x="905" y="156">usb backend</text>
+      <text x="905" y="180" font-size="14" font-weight="400" fill="#64748b">libusb</text>
+    </g>
+    <g>
+      <rect x="1030" y="120" width="180" height="80" rx="12" fill="#dcfce7" stroke="#22c55e" stroke-width="2"/>
+      <text x="1120" y="150">Printer</text>
+      <text x="1120" y="176" font-size="14" font-weight="400" fill="#166534">FWVER:20080222</text>
+    </g>
+
+    <!-- arrows -->
+    <g stroke="#64748b" stroke-width="2" marker-end="url(#arrow)" fill="none">
+      <path d="M180,160 L218,160"/>
+      <path d="M370,160 L408,160"/>
+      <path d="M560,160 L598,160"/>
+      <path d="M780,160 L818,160"/>
+      <path d="M990,160 L1028,160"/>
+    </g>
+  </g>
+  <text x="620" y="270" text-anchor="middle" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="15" fill="#64748b">If this chain completes but nothing prints, the firmware was never uploaded — the queue is fine.</text>
+</svg>

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="640" viewBox="0 0 1240 640" role="img" aria-label="Cross-platform sharing overview">
+  <defs>
+    <linearGradient id="srv" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1e293b"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1240" height="640" fill="#f8fafc"/>
+  <text x="620" y="46" text-anchor="middle" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="26" font-weight="700" fill="#0f172a">One printer, every platform on the LAN</text>
+  <text x="620" y="74" text-anchor="middle" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="16" fill="#64748b">CUPS (IPP) + Samba (SMB) + Avahi (mDNS) + wsdd (WS-Discovery)</text>
+
+  <!-- server -->
+  <rect x="470" y="250" width="300" height="150" rx="16" fill="url(#srv)" stroke="#334155" stroke-width="2"/>
+  <text x="620" y="295" text-anchor="middle" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#f8fafc">Linux server</text>
+  <text x="620" y="326" text-anchor="middle" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="15" fill="#67e8f9">cupsd :631 · smbd :445 · wsdd :3702</text>
+  <text x="620" y="356" text-anchor="middle" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="14" fill="#94a3b8">foomatic-rip → foo2zjs → USB</text>
+  <rect x="560" y="372" width="120" height="18" rx="9" fill="#22c55e" opacity="0.25"/>
+  <text x="620" y="386" text-anchor="middle" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" fill="#4ade80">sihp1020.dl loaded</text>
+
+  <!-- clients -->
+  <g font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" text-anchor="middle" font-size="15" font-weight="600">
+    <rect x="120" y="120" width="210" height="86" rx="14" fill="#dbeafe" stroke="#60a5fa" stroke-width="2"/>
+    <text x="225" y="156" fill="#1e3a8a">Windows 10/11</text>
+    <text x="225" y="182" font-size="13" font-weight="400" fill="#334155">IPP (auto) or SMB + HP driver</text>
+
+    <rect x="120" y="430" width="210" height="86" rx="14" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+    <text x="225" y="466" fill="#0f172a">macOS</text>
+    <text x="225" y="492" font-size="13" font-weight="400" fill="#334155">Bonjour / AirPrint / IPP</text>
+
+    <rect x="910" y="120" width="210" height="86" rx="14" fill="#fce7f3" stroke="#f472b6" stroke-width="2"/>
+    <text x="1015" y="156" fill="#9d174d">iOS / iPadOS</text>
+    <text x="1015" y="182" font-size="13" font-weight="400" fill="#334155">AirPrint (auto)</text>
+
+    <rect x="910" y="430" width="210" height="86" rx="14" fill="#dcfce7" stroke="#22c55e" stroke-width="2"/>
+    <text x="1015" y="466" fill="#166534">Android</text>
+    <text x="1015" y="492" font-size="13" font-weight="400" fill="#334155">Mopria / IPP</text>
+
+    <rect x="510" y="90" width="220" height="86" rx="14" fill="#ffedd5" stroke="#fb923c" stroke-width="2"/>
+    <text x="620" y="126" fill="#9a3412">Linux (other PCs)</text>
+    <text x="620" y="152" font-size="13" font-weight="400" fill="#334155">IPP Everywhere (-m everywhere)</text>
+
+    <rect x="510" y="500" width="220" height="86" rx="14" fill="#fef9c3" stroke="#facc15" stroke-width="2"/>
+    <text x="620" y="536" fill="#854d0e">ChromeOS / other</text>
+    <text x="620" y="562" font-size="13" font-weight="400" fill="#334155">any IPP client (FreeBSD, ...)</text>
+  </g>
+
+  <!-- links -->
+  <g stroke="#94a3b8" stroke-width="2" fill="none" stroke-dasharray="6 6">
+    <path d="M330,163 C430,163 470,250 520,270"/>
+    <path d="M330,473 C430,473 470,400 520,382"/>
+    <path d="M910,163 C810,163 770,250 720,270"/>
+    <path d="M910,473 C810,473 770,400 720,382"/>
+    <path d="M620,176 L620,248"/>
+    <path d="M620,502 L620,402"/>
+  </g>
+</svg>

@@ -29,13 +29,13 @@ sudo /usr/lib/cups/backend/usb | grep -i 1020
 
 **Broken** (no firmware):
 
-```
+```text
 MFG:Hewlett-Packard;MDL:HP LaserJet 1020;CMD:ACL;CLS:PRINTER;DES:HP LaserJet 1020;
 ```
 
 **Working** (firmware loaded):
 
-```
+```text
 MFG:Hewlett-Packard;MDL:HP LaserJet 1020;CMD:ACL;CLS:PRINTER;DES:HP LaserJet 1020;FWVER:20080222;
 ```
 
@@ -64,7 +64,7 @@ sudo grep -E '\*ShortNickName|FoomaticRIPCommandLine|cupsFilter' /etc/cups/ppd/<
 
 Expected:
 
-```
+```text
 *ShortNickName: "HP LaserJet 1020 foo2zjs-z1"
 *FoomaticRIPCommandLine: "foo2zjs-wrapper -z1 -P -L0 %A"
 *cupsFilter: "application/vnd.cups-postscript 100 foomatic-rip"
@@ -85,7 +85,7 @@ cupsctl --no-debug-logging
 
 A healthy run shows the whole chain:
 
-```
+```text
 universal -> pdftopdf -> gs -> pstops -> foomatic-rip (foo2zjs-wrapper -z1 -P -L0)
 -> /usr/lib/cups/backend/usb -> Sent N bytes -> completed
 ```

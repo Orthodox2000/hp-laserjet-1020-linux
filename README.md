@@ -1,4 +1,9 @@
-# HP LaserJet 1020 on Linux — print, share to Windows/macOS/iOS/Android
+![HP LaserJet 1020 on Linux — print + share on any platform](assets/banner.svg)
+
+# HP LaserJet 1020 on Linux — print it, share it with everything
+
+[![lint](https://github.com/Orthodox2000/hp-laserjet-1020-linux/actions/workflows/lint.yml/badge.svg)](https://github.com/Orthodox2000/hp-laserjet-1020-linux/actions/workflows/lint.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Fix and fully document the classic problem:
 
@@ -7,9 +12,9 @@ Fix and fully document the classic problem:
 
 This repo explains **why** that happens and provides an idempotent script + docs to make the
 HP LaserJet 1020 (and close relatives) print reliably on Linux, then share it to Windows,
-macOS, iOS and Android on the same LAN.
+macOS, iOS, Android, FreeBSD and anything else on the LAN.
 
-Tested on: **Linux Mint 22.3 (Ubuntu 24.04 "noble" base), CUPS 2.4.7, foo2zjs 20200505dfsg0,
+Tested on: **Linux Mint 22.3 (Ubuntu 24.04 "noble"), CUPS 2.4.7, foo2zjs 20200505dfsg0,
 Samba 4.19.5, HPLIP 3.23.12**, printer on USB.
 
 ---
@@ -24,9 +29,11 @@ does nothing.
 
 - The **driver** was never the problem. It's the normal open-source `foo2zjs` package.
 - The **firmware** was missing. That's the fix.
-- A second trap: the `arm2hpdl` tool produces **two different output formats**
-  (`beef`/ELF vs `ACL`/PJL). Only **ACL/PJL** works on the 1020. The wrong one is accepted
-  by the printer but never runs.
+- A second trap: `arm2hpdl` produces **two different output formats** (`beef`/ELF vs
+  `ACL`/PJL). Only **ACL/PJL** works on the 1020.
+- The reason the firmware is hard to get: upstream `getweb`'s only mirror is dead — see
+  [OpenPrinting/foo2zjs#33](https://github.com/OpenPrinting/foo2zjs/issues/33). This repo
+  bundles the correct firmware.
 
 Details: [`docs/03-firmware.md`](docs/03-firmware.md).
 
@@ -49,9 +56,41 @@ Then verify:
 
 ```bash
 lpstat -p -d
-sudo usb_printerid /dev/usb/lp0        # should show  ...FWVER:20080222;
+sudo modprobe usblp; sudo usb_printerid /dev/usb/lp0   # expect ...FWVER:20080222;
 lp -d "$(lpstat -d | awk '{print $NF}')" /usr/share/cups/data/default-testpage.pdf
 ```
+
+---
+
+## How it works
+
+![The CUPS print pipeline](assets/pipeline.svg)
+
+![Why the printer needs firmware after every power-on](assets/firmware-flow.svg)
+
+---
+
+## Cross-platform: one printer, every device
+
+![One printer, every platform](assets/sharing.svg)
+
+The host is the **only** machine that needs `foo2zjs` + the firmware. Everyone else speaks
+**IPP** (a vendor-neutral standard) or SMB, so there is no per-OS driver port to maintain.
+
+| OS / device | Discovery | Connection | Driver on client |
+|---|---|---|---|
+| Windows 11 | IPP + mDNS | `http://<ip>:631/printers/<q>` | none (IPP class) |
+| Windows 10 | IPP + mDNS | `http://<ip>:631/printers/<q>` | none (IPP class) |
+| Windows (SMB raw) | WSD | `\\<ip>\HP-LaserJet-1020` | HP LJ1020 |
+| macOS 11+ / older | Bonjour | auto (AirPrint) | none |
+| iOS / iPadOS / visionOS | AirPrint | auto | none |
+| Android | Mopria | auto or `ipp://...` | none |
+| ChromeOS | IPP | `ipp://...` | generic |
+| Linux (other PCs) | IPP + mDNS | `lpadmin -m everywhere` | none |
+| FreeBSD / OpenBSD / NetBSD | IPP | `lpadmin -m everywhere` | none |
+| Solaris / illumos / Haiku | IPP | print dialog / `lpadmin` | none |
+
+Full instructions and a larger matrix: [`docs/06-cross-platform.md`](docs/06-cross-platform.md).
 
 ---
 
@@ -59,36 +98,45 @@ lp -d "$(lpstat -d | awk '{print $NF}')" /usr/share/cups/data/default-testpage.p
 
 | Path | What it is |
 |------|------------|
-| [`docs/01-symptoms.md`](docs/01-symptoms.md) | What "broken" looks like (and what it does *not* look like) |
-| [`docs/02-diagnosis.md`](docs/02-diagnosis.md) | Reading the USB device ID / `FWVER`, finding the real cause |
-| [`docs/03-firmware.md`](docs/03-firmware.md) | Host-based printers, `sihp1020.dl`, and the `arm2hpdl` format trap |
+| [`docs/README.md`](docs/README.md) | Documentation index |
+| [`docs/01-symptoms.md`](docs/01-symptoms.md) | What "broken" looks like (and what it does *not*) |
+| [`docs/02-diagnosis.md`](docs/02-diagnosis.md) | Reading the USB device ID / `FWVER` |
+| [`docs/03-firmware.md`](docs/03-firmware.md) | Host-based printers, `sihp1020.dl`, the `arm2hpdl` format trap |
 | [`docs/04-cups-queue.md`](docs/04-cups-queue.md) | The foo2zjs queue, PPD, device URI and filter chain |
-| [`docs/05-windows-sharing.md`](docs/05-windows-sharing.md) | CUPS IPP + Samba + WS-Discovery (`wsdd`) for Windows |
-| [`docs/06-cross-platform.md`](docs/06-cross-platform.md) | Windows / macOS / Linux / iOS / Android instructions |
+| [`docs/05-windows-sharing.md`](docs/05-windows-sharing.md) | CUPS IPP + Samba + WS-Discovery (`wsdd`) |
+| [`docs/06-cross-platform.md`](docs/06-cross-platform.md) | Windows / macOS / Linux / iOS / Android / ChromeOS / BSD |
 | [`docs/07-troubleshooting.md`](docs/07-troubleshooting.md) | Every symptom we hit and its cause/fix |
-| [`docs/08-migration.md`](docs/08-migration.md) | Moving the whole setup to a fresh Linux install |
+| [`docs/08-migration.md`](docs/08-migration.md) | Moving the whole setup to a fresh install |
+| [`docs/09-windows-driver.md`](docs/09-windows-driver.md) | HP's Windows driver per Windows version |
+| [`docs/10-other-distros.md`](docs/10-other-distros.md) | Fedora/RHEL, Arch, openSUSE, NixOS, Gentoo, Alpine |
+| [`docs/11-bsd-and-others.md`](docs/11-bsd-and-others.md) | FreeBSD / OpenBSD / NetBSD / other hosts |
 | `scripts/install-firmware.sh` | Installs/converts the firmware and wires up auto-load |
 | `scripts/restore-printer-and-shares.sh` | One-shot: queue + firmware + LAN/SMB sharing |
 | `config/` | `smb.conf`, reference `cupsd.conf`, exact working PPD |
 | `systemd/` | `wsdd.service` unit + Samba mount dependencies |
-| `firmware/sihp1020.dl` | The working firmware (ACL/PJL format, 128999 bytes) |
+| `firmware/sihp1020.dl` | The working firmware (ACL/PJL, 128999 bytes) |
+| `assets/` | SVG diagrams (banner, pipeline, firmware flow, sharing, decision tree) |
 
 ---
 
-## Cross-platform summary
+## Troubleshooting at a glance
 
-Once the printer prints on the Linux host and CUPS is sharing it:
+![Troubleshooting decision tree](assets/troubleshoot.svg)
 
-| Client OS | How it connects | Driver needed? |
-|-----------|-----------------|----------------|
-| **Windows 10/11** | IPP (`http://<server>:631/printers/<queue>`) or SMB (`\\<server>\HP-LaserJet-1020`) | IPP: auto. SMB: use HP's LJ1020 Windows driver (pass-through) |
-| **macOS** | Auto-discovered (Bonjour/AirPrint, IPP) — "Add Printer" shows it | No |
-| **Linux** | IPP Everywhere / the shared queue | No |
-| **iOS / iPadOS** | AirPrint (auto) | No |
-| **Android** | Mopria / "Add printer" (IPP) | No |
-| **ChromeOS** | IPP | No |
+Full field guide: [`docs/07-troubleshooting.md`](docs/07-troubleshooting.md).
 
-Full details: [`docs/06-cross-platform.md`](docs/06-cross-platform.md).
+---
+
+## Reporting / upstream status
+
+The reason `getweb` cannot fetch firmware anymore is tracked upstream:
+
+- **[OpenPrinting/foo2zjs#33](https://github.com/OpenPrinting/foo2zjs/issues/33)** —
+  `getweb`'s only mirror (`quirinux.org`) is unreachable.
+- **Ubuntu Launchpad [#1382606](https://bugs.launchpad.net/ubuntu/+source/foo2zjs/+bug/1382606)** —
+  "foo2zjs doesnt automatically download firmware for LJ 1000/1005/1008/1020 etc." (open).
+
+This repository is the documented workaround and bundles the correct firmware.
 
 ---
 
@@ -97,7 +145,16 @@ Full details: [`docs/06-cross-platform.md`](docs/06-cross-platform.md).
 `firmware/sihp1020.dl` is **HP's proprietary firmware**, redistributed here for
 interoperability because it is required to operate hardware you own. It is the same blob
 HPLIP ships (`hp_laserjet_1020.fw.gz`) and that `foo2zjs` uploads. If you would rather not
-use the bundled copy, [`docs/03-firmware.md`](docs/03-firmware.md) shows how to regenerate
-it from your own printer/HPLIP installation.
+use the bundled copy, [`docs/03-firmware.md`](docs/03-firmware.md) shows how to regenerate it
+from your own printer/HPLIP installation.
 
 The scripts and documentation are MIT-licensed (see [`LICENSE`](LICENSE)).
+
+---
+
+## Credits
+
+- The [foo2zjs](https://github.com/OpenPrinting/foo2zjs) project (Rick Richardson, OpenPrinting)
+  — the actual driver.
+- HPLIP, which supplies the firmware blob.
+- Samba, CUPS and `wsdd` for the sharing stack.

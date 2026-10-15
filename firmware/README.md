@@ -8,7 +8,7 @@ This is the **runtime firmware** for the HP LaserJet 1020.
 |---|---|
 | Size | 128999 bytes |
 | md5 | `0cd1ac3a4f6cb7995e99deffff840927` |
-| Format | ACL/PJL (starts with an ASCII date, **not** ELF) |
+| Format | ACL/PJL — begins with the PJL header `ESC %-12345X@PJL ENTER LANGUAGE=ACL` |
 | Installs to | `/var/lib/foo2zjs/firmware/sihp1020.dl` |
 
 The HP LaserJet 1020 is a **host-based (GDI) printer with no firmware in flash**.
@@ -27,12 +27,13 @@ sources, see [`../docs/03-firmware.md`](../docs/03-firmware.md):
 
 - Decompress HPLIP's copy:
   `gunzip -c hp_laserjet_1020.fw.gz > sihp1020.dl` (expect md5 above).
-- Do **not** build it from an ELF using `arm2hpdl` — that yields the wrong `beef`/ELF
-  format which the printer accepts but never runs.
+- Do **not** wrap a bare ELF with `arm2hpdl` — that yields the wrong `\xbe\xef` ("beef")
+  format, which the printer accepts but never runs. (HPLIP's `.fw.gz` is already ACL/PJL and
+  needs no conversion.)
 
 ## Verify
 
 ```bash
 md5sum sihp1020.dl          # 0cd1ac3a4f6cb7995e99deffff840927
-head -c 8 sihp1020.dl | xxd # starts with ASCII date, not 7f 45 4c 46
+head -c 32 sihp1020.dl | xxd # begins 1b25 2d31 ... (ESC %-12345X@PJL ENTER LANGUAGE=ACL), not 7f 45 4c 46
 ```

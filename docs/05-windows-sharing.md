@@ -23,7 +23,7 @@ sudo cupsctl --share-printers
 
 And make CUPS listen on the LAN + allow the local subnet. Edit `/etc/cups/cupsd.conf`:
 
-```
+```text
 Listen 0.0.0.0:631
 Listen [::]:631
 Browsing On
@@ -153,7 +153,7 @@ Now Explorer → **Network** shows the server, and its shares appear under it.
 
 ## Part D — Done. What Windows sees
 
-```
+```text
 \\SERVER\HP-LaserJet-1020      <-- printer (use HP LaserJet 1020 driver)
 \\SERVER\<FOLDER-SHARE>        <-- any shared folder
 \\SERVER\HP1020-Windows-Driver <-- optional: host the Windows driver for clients
@@ -161,7 +161,7 @@ Now Explorer → **Network** shows the server, and its shares appear under it.
 
 Fastest access that always works regardless of Network browsing: type the address directly
 
-```
+```text
 \\<SERVER_IP>
 ```
 

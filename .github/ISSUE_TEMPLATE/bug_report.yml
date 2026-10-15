@@ -1,0 +1,62 @@
+name: Bug report
+description: Report a printer/Distro/OS combination that doesn't work
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping the next person! Please be specific — the most useful field is the
+        printer's IEEE-1284 device ID.
+  - type: input
+    id: printer
+    attributes:
+      label: Printer model
+      description: e.g. HP LaserJet 1020
+    validations:
+      required: true
+  - type: input
+    id: host
+    attributes:
+      label: Host OS / distro + version
+      description: e.g. Linux Mint 22.3 (Ubuntu 24.04), Fedora 40, FreeBSD 14
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: Client OS (if a sharing problem)
+      description: e.g. Windows 11, macOS 14, Android 14 — leave blank if only the host prints
+    validations:
+      required: false
+  - type: textarea
+    id: deviceid
+    attributes:
+      label: Device ID
+      description: "Output of: sudo modprobe usblp; sudo usb_printerid /dev/usb/lp0  (does it contain FWVER?)"
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: symptom
+    attributes:
+      label: What happens?
+      description: Does the job report "completed"? Does anything print? Any error?
+    validations:
+      required: true
+  - type: textarea
+    id: queue
+    attributes:
+      label: Queue + driver
+      description: Output of `lpstat -v` and `grep -E 'ShortNickName|FoomaticRIPCommandLine' /etc/cups/ppd/*.ppd`
+      render: text
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Tail of /var/log/cups/error_log around the failed job, and `sudo usb_printerid /dev/usb/lp0`
+      render: text
+    validations:
+      required: false

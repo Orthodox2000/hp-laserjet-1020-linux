@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Upstream firmware download bug (foo2zjs)
+    url: https://github.com/OpenPrinting/foo2zjs/issues/33
+    about: getweb's only firmware mirror (quirinux.org) is unreachable — this repo bundles the firmware as a workaround.
+  - name: Documentation index
+    url: https://github.com/Orthodox2000/hp-laserjet-1020-linux/blob/main/docs/README.md
+    about: Start here for the symptoms → cause → fix walkthrough.

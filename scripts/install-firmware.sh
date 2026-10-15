@@ -55,12 +55,15 @@ fi
 # --- sanity checks ----------------------------------------------------------
 MD5="$(md5sum "$FWFILE" | awk '{print $1}')"
 SIZE="$(stat -c %s "$FWFILE")"
-MAGIC="$(head -c 2 "$FWFILE" | tr -d '\0')"
-echo "    size=$SIZE  md5=$MD5  magic='$MAGIC'"
+FIRST2="$(head -c 2 "$FWFILE" | od -An -tx1 | tr -d ' \n')"
+echo "    size=$SIZE  md5=$MD5  first2=0x$FIRST2"
 [[ "$MD5" == "$KNOWN_MD5" ]] && echo "    OK: matches known-good 1020 firmware" \
                              || echo "    WARNING: md5 differs from known-good ($KNOWN_MD5)"
-[[ "$MAGIC" == "20" ]] && echo "    OK: ACL/PJL format (starts with an ASCII date)" \
-                       || echo "    WARNING: not ACL/PJL (should start with '20'), printer may accept it but ignore it"
+case "$FIRST2" in
+  1b25) echo "    OK: ACL/PJL format (begins ESC %-12345X@PJL ENTER LANGUAGE=ACL)" ;;
+  beef|c0de) echo "    WARNING: HP download-header ('beef') format — the printer accepts but ignores it" ;;
+  *)    echo "    WARNING: unexpected header 0x$FIRST2; expected 0x1b25 (ACL/PJL)" ;;
+esac
 
 echo "==> Preventing HPLIP from competing with the foo2zjs loader"
 RULE="/usr/lib/udev/rules.d/56-hpmud.rules"

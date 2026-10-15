@@ -11,7 +11,7 @@ has a small RAM buffer, no flash-resident firmware, and no page language. Instea
 CPU does the rendering and the host **uploads the printer's runtime firmware into the
 printer's RAM over USB at the start of every power-on cycle**.
 
-```
+```text
  power on ──► printer sits in "boot" state (no FWVER)
                       │
      host uploads sihp1020.dl  (this is the missing step)
@@ -32,13 +32,15 @@ Canon LBP-2900/3000, ...). The `foo2zjs` project supports them.
 
 ## What file you need
 
-```
+```text
 /var/lib/foo2zjs/firmware/sihp1020.dl
 ```
 
 - Size: **128999 bytes**
 - md5: `0cd1ac3a4f6cb7995e99deffff840927`
-- Format: **ACL/PJL** (a.k.a. "PJL-wrapped"), first bytes are ASCII (a date string), not ELF.
+- Format: **ACL/PJL** (a.k.a. "PJL-wrapped"). It begins with the PJL "universal exit"
+  sequence (`ESC %-12345X`) followed by `@PJL ENTER LANGUAGE=ACL` — **not** an ELF header,
+  and **not** the `\xbe\xef` ("beef") HP download header.
 
 This repo ships it at [`../firmware/sihp1020.dl`](../firmware/sihp1020.dl).
 
@@ -68,17 +70,20 @@ That decompressed file is byte-for-byte identical to the correct `sihp1020.dl`.
 `foo2zjs` ships `arm2hpdl`, which converts firmware images. **It has two very different
 output paths** depending on the input's first bytes:
 
-| Input starts with | `arm2hpdl` output header | Works on LJ 1020? |
+| Input starts with | What `arm2hpdl` emits | Works on LJ 1020? |
 |---|---|---|
-| `\x7fELF` (ELF binary, e.g. from a Windows driver) | `beef` / ELF format | **NO** |
-| ASCII date like `20...` (HPLIP `.fw`) | **ACL/PJL** format | **YES** |
+| `\x7fELF` (a bare ARM/Linux ELF) | `\xbe\xef` HP download header ("beef") | **NO** |
+| ASCII `20...` (HP's *raw* firmware image, e.g. `sihp1020.img`) | **ACL/PJL** envelope | **YES** |
+| `\xbe\xef` ("beef", already HP-wrapped) | copied through unchanged | **NO** |
 
-If you feed it an ELF and upload the result, the printer **accepts the bytes and returns
+If you feed it a bare ELF and upload the result, the printer **accepts the bytes and returns
 success** but never runs — no `FWVER`, no print. This is the single most confusing failure
 mode.
 
-So if you have the Windows driver's raw firmware (ELF), converting it with `arm2hpdl`
-gives the **wrong** (beef) format. Prefer Option B (HPLIP's `.fw.gz`) or the bundled file.
+`foo2zjs`'s own `getweb` downloads HP's *raw* firmware image (the file that starts with a
+date like `20080822`); running `arm2hpdl` on **that** is what produces the correct ACL/PJL
+file. HPLIP's `.fw.gz` is already in ACL/PJL form, so it needs no conversion at all. Prefer
+Option B (HPLIP's `.fw.gz`) or the bundled file, and never wrap a bare ELF by hand.
 
 ## Verify the installed firmware
 
@@ -86,8 +91,9 @@ gives the **wrong** (beef) format. Prefer Option B (HPLIP's `.fw.gz`) or the bun
 md5sum /var/lib/foo2zjs/firmware/sihp1020.dl
 # 0cd1ac3a4f6cb7995e99deffff840927
 
-# first bytes should be ASCII/date, not ELF:
-head -c 8 /var/lib/foo2zjs/firmware/sihp1020.dl | xxd
+# it must begin with the PJL/ACL header (0x1b 0x25 "ESC %"), not 7f 45 4c 46 (ELF), not be ef ("beef"):
+head -c 32 /var/lib/foo2zjs/firmware/sihp1020.dl | xxd
+# 00000000: 1b25 2d31 3233 3435 5840 504a 4c20 454e  .%-12345X@PJL EN
 ```
 
 ## How the firmware gets uploaded automatically

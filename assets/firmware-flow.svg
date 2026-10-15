@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="420" viewBox="0 0 1240 420" role="img" aria-label="Firmware upload flow">
+  <defs>
+    <marker id="ar2" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#0ea5e9"/>
+    </marker>
+  </defs>
+  <rect width="1240" height="420" fill="#ffffff"/>
+  <text x="620" y="46" text-anchor="middle" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="26" font-weight="700" fill="#0f172a">Why the printer needs firmware after every power-on</text>
+
+  <g font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" text-anchor="middle">
+    <!-- step 1 -->
+    <rect x="60" y="110" width="220" height="120" rx="14" fill="#fef2f2" stroke="#f87171" stroke-width="2"/>
+    <text x="170" y="150" font-size="18" font-weight="700" fill="#991b1b">Power on</text>
+    <text x="170" y="180" font-size="14" fill="#7f1d1d">Printer is empty</text>
+    <text x="170" y="202" font-size="14" fill="#7f1d1d">no FWVER in device ID</text>
+
+    <!-- step 2 -->
+    <rect x="360" y="110" width="260" height="120" rx="14" fill="#eff6ff" stroke="#60a5fa" stroke-width="2"/>
+    <text x="490" y="150" font-size="18" font-weight="700" fill="#1e3a8a">Host uploads firmware</text>
+    <text x="490" y="180" font-size="14" fill="#1e40af">/var/lib/foo2zjs/firmware/</text>
+    <text x="490" y="202" font-size="14" fill="#1e40af">sihp1020.dl (ACL/PJL)</text>
+
+    <!-- step 3 -->
+    <rect x="700" y="110" width="220" height="120" rx="14" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
+    <text x="810" y="150" font-size="18" font-weight="700" fill="#166534">Printer runs</text>
+    <text x="810" y="180" font-size="14" fill="#15803d">FWVER:20080222</text>
+    <text x="810" y="202" font-size="14" fill="#15803d">ready to print</text>
+
+    <!-- step 4 -->
+    <rect x="1000" y="110" width="190" height="120" rx="14" fill="#f5f3ff" stroke="#a78bfa" stroke-width="2"/>
+    <text x="1095" y="150" font-size="18" font-weight="700" fill="#5b21b6">Job printed</text>
+    <text x="1095" y="180" font-size="14" fill="#6d28d9">page comes out</text>
+
+    <g stroke="#0ea5e9" stroke-width="3" marker-end="url(#ar2)" fill="none">
+      <path d="M280,170 L358,170"/>
+      <path d="M620,170 L698,170"/>
+      <path d="M920,170 L998,170"/>
+    </g>
+
+    <!-- bad path -->
+    <rect x="60" y="290" width="1130" height="90" rx="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+    <text x="110" y="326" text-anchor="start" font-size="17" font-weight="700" fill="#92400e">Broken case:</text>
+    <text x="240" y="326" text-anchor="start" font-size="16" fill="#78350f">if sihp1020.dl is missing, or built with the wrong arm2hpdl format (ELF→beef),</text>
+    <text x="240" y="352" text-anchor="start" font-size="16" fill="#78350f">the printer accepts the bytes, never sets FWVER, and never prints. The job still says "completed".</text>
+  </g>
+</svg>

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="340" viewBox="0 0 1280 340" role="img" aria-label="HP LaserJet 1020 on Linux">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#152238"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2dd4bf"/>
+      <stop offset="1" stop-color="#60a5fa"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f8fafc"/>
+      <stop offset="1" stop-color="#cbd5e1"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="340" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1280" height="6" fill="url(#accent)"/>
+
+  <!-- printer icon -->
+  <g transform="translate(96,96)">
+    <rect x="0" y="70" width="180" height="96" rx="14" fill="#1f2f4a" stroke="#334a6e" stroke-width="2"/>
+    <rect x="26" y="40" width="128" height="44" rx="8" fill="#2b3d5c" stroke="#3f587f" stroke-width="2"/>
+    <rect x="34" y="18" width="112" height="34" rx="6" fill="url(#paper)"/>
+    <rect x="46" y="96" width="88" height="46" rx="6" fill="url(#paper)"/>
+    <circle cx="150" cy="120" r="7" fill="#2dd4bf"/>
+  </g>
+
+  <!-- title -->
+  <text x="330" y="120" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="54" font-weight="700" fill="#f8fafc">HP LaserJet 1020</text>
+  <text x="330" y="172" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="30" font-weight="600" fill="url(#accent)">print + share on any platform</text>
+  <text x="330" y="214" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="20" fill="#94a3b8">The fix is the firmware sihp1020.dl — not the driver. Then CUPS + Samba + WS-Discovery.</text>
+
+  <!-- platform pills -->
+  <g font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="18" font-weight="600" fill="#0b1220">
+    <rect x="330" y="250" width="120" height="42" rx="21" fill="#93c5fd"/>
+    <text x="390" y="277" text-anchor="middle">Windows</text>
+    <rect x="466" y="250" width="110" height="42" rx="21" fill="#e2e8f0"/>
+    <text x="521" y="277" text-anchor="middle">macOS</text>
+    <rect x="592" y="250" width="96" height="42" rx="21" fill="#fdba74"/>
+    <text x="640" y="277" text-anchor="middle">Linux</text>
+    <rect x="704" y="250" width="74" height="42" rx="21" fill="#c4b5fd"/>
+    <text x="741" y="277" text-anchor="middle">iOS</text>
+    <rect x="794" y="250" width="118" height="42" rx="21" fill="#86efac"/>
+    <text x="853" y="277" text-anchor="middle">Android</text>
+    <rect x="928" y="250" width="140" height="42" rx="21" fill="#fca5a5"/>
+    <text x="998" y="277" text-anchor="middle">ChromeOS</text>
+  </g>
+</svg>
