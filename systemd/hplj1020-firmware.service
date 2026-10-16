@@ -1,0 +1,12 @@
+[Unit]
+Description=Upload runtime firmware to the HP LaserJet 1020 (foo2zjs)
+Documentation=file:/usr/share/doc/printer-driver-foo2zjs/README.Debian
+After=systemd-udevd.service
+# The printer is useless without its firmware; skip cleanly if it is missing.
+ConditionPathExists=/var/lib/foo2zjs/firmware/sihp1020.dl
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/hplj1020-firmware-upload
+# A power cycle mid-upload is harmless (the next attach re-runs this unit).
+TimeoutStartSec=120

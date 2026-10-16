@@ -74,15 +74,14 @@ fi
 rm -f /usr/share/hplip/data/firmware/*.fw.gz 2>/dev/null || true
 udevadm control --reload-rules 2>/dev/null || true
 
+echo "==> Installing the resilient auto-upload (systemd unit + udev rule)"
+bash "$ROOT_DIR/scripts/install-firmware-loader.sh"
+
 echo "==> Uploading firmware now (if the printer is connected)"
-URI="$(/usr/lib/cups/backend/usb 2>/dev/null | awk '/LaserJet.*1020/{print $2; exit}')" || true
-if [[ -n "${URI:-}" ]]; then
-  echo "    device: $URI"
-  DEVICE_URI="$URI" /usr/lib/cups/backend/usb 1 1 1 1 '' "$FWFILE" >/dev/null 2>&1 \
-    && echo "    upload command returned success" \
-    || echo "    upload command failed (will retry automatically on next plug-in)"
+if /usr/local/sbin/hplj1020-firmware-upload; then
+  echo "    firmware present (uploaded now or already loaded)"
 else
-  echo "    no LJ 1020 on USB right now; the udev rule uploads it when connected."
+  echo "    no firmware yet (no printer, or upload failed); it retries on next attach"
 fi
 
 echo "==> Verifying (expect to see FWVER:... if firmware loaded)"

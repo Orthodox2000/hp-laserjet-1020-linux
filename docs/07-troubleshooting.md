@@ -14,11 +14,17 @@ A field guide. Each entry: **symptom → cause → fix**.
 
 ### 2. Firmware upload returns success (exit 0) but `FWVER` never appears
 
-**Cause:** wrong firmware **format**. A bare **ELF** was wrapped by `arm2hpdl` into the
+**Cause A:** wrong firmware **format**. A bare **ELF** was wrapped by `arm2hpdl` into the
 `\xbe\xef` ("beef") HP download-header format instead of the **ACL/PJL** format.
 **Fix:** use the ACL-format blob (HPLIP's decompressed `hp_laserjet_1020.fw.gz`, or the one
 in this repo). `arm2hpdl` picks the format from the input's first bytes — HP's raw `20...`
 image → ACL/PJL, a bare `\x7fELF` → "beef"; HPLIP's `.fw` is already ACL/PJL. See doc 03.
+
+**Cause B:** the stock foo2zjs udev helper backgrounds the upload and modern systemd-udevd
+reaps the worker group before completion (silent; often no "download successful/failed"
+logged in `journalctl -t hplj1020`).  
+**Fix:** run `sudo /usr/local/sbin/hplj1020-firmware-upload`. If this resolves it, install
+the resilient loader: `sudo bash scripts/install-firmware-loader.sh`. See doc 03.
 
 ### 3. `usb_printerid: can't open /dev/usb/lp0`
 

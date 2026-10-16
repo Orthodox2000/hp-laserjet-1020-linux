@@ -1,0 +1,14 @@
+# HP LaserJet 1020 (host-based / GDI printer): upload the runtime firmware
+# (sihp1020.dl) into the printer's RAM every time it is attached or powered on.
+#
+# This replaces the RUN+="hplj1020" hook from printer-driver-foo2zjs's
+# /usr/lib/udev/rules.d/85-hplj10xx.rules. That helper uploads in a backgrounded
+# subshell and returns immediately, so systemd-udevd (>= 255.4-1ubuntu8.18)
+# reaps the worker process group and kills the transfer before it completes.
+# Handing the work to a systemd unit decouples it from the udev worker's
+# lifetime. scripts/install-firmware-loader.sh disables the stock RUN hook and
+# keeps the stock SYMLINK, so this rule only needs to start the service.
+
+ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", \
+  ATTR{idVendor}=="03f0", ATTR{idProduct}=="2b17", \
+  RUN+="/bin/systemctl --no-block --no-ask-password start hplj1020-firmware.service"

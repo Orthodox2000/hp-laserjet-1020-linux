@@ -15,6 +15,19 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
   troubleshooting decision tree.
 - Full cross-platform compatibility matrix (Windows/macOS/Linux/iOS/Android/ChromeOS/BSD/...).
 - `.github/workflows/lint.yml` — shellcheck + markdownlint + firmware checksum CI.
+- Resilient firmware auto-loader (`systemd/hplj1020-firmware.service`, `scripts/hplj1020-firmware-upload.sh`,
+  `udev/85-hplj1020-firmware.rules`) to survive modern systemd-udevd process-group teardown.
+- `scripts/install-firmware-loader.sh` to deploy the resilient loader and neutralise the
+  backgrounded stock foo2zjs helper.
+
+### Fixed
+
+- **Firmware upload regression on modern systemd/udev**: the foo2zjs `hplj1020` helper backgrounds
+  its upload subshell (`( ... ) &`) and returns immediately; on recent systemd-udevd
+  (>= 255.4-1ubuntu8.18) the worker process group is killed at RUN+= completion, aborting the
+  transfer before `FWVER` is written. Added a systemd-driven synchronous uploader (and udev
+  trigger) so the upload completes reliably on every USB attach/power cycle. Documentation
+  updated (docs/03-firmware.md) and installer scripts now deploy the resilient loader.
 
 ## [1.0.0] - 2026-10-15
 

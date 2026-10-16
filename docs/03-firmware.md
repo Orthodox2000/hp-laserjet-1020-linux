@@ -113,12 +113,47 @@ On USB "add", the rule runs `hplj1020`, which:
 Because of (3), running the loader when the printer is already up is a silent no-op — that
 is normal and does **not** mean it's broken.
 
+### Why the stock udev loader stopped working
+
+The foo2zjs helper uploads firmware in a **backgrounded subshell** (`( ... ) &`) and
+returns immediately. On older udev versions, the detached child survived long enough to
+complete the transfer. With modern systemd-udevd (e.g. 255.4-1ubuntu8.18), the worker's
+process group is torn down as soon as the RUN+= program exits, so the in-flight upload is
+**killed mid-transfer**. When this happens, the helper logs "loading firmware..." but never
+prints "download successful/failed", the printer never gains `FWVER`, and print jobs
+"complete" with nothing coming out of the printer.
+
+The fix in this repo is to run the upload **synchronously** inside a systemd oneshot unit
+(`hplj1020-firmware.service`) triggered by udev. The unit is not tied to the udev worker's
+lifetime, so the transfer completes reliably even on modern systemd releases.
+
+#### How this repo does it (resilient loader)
+
+This repository installs a more robust, race-free mechanism (used by
+`scripts/install-firmware.sh` and `scripts/restore-printer-and-shares.sh`):
+
+- `/usr/local/sbin/hplj1020-firmware-upload` — synchronous uploader with retries,
+  checks for `FWVER` before/after, and logs via `logger -t hplj1020-firmware`.
+- `/etc/systemd/system/hplj1020-firmware.service` — `Type=oneshot` service that runs the
+  uploader.
+- `/etc/udev/rules.d/85-hplj1020-firmware.rules` — udev rule that starts the service
+  (`systemctl --no-block start`) when the HP LaserJet 1020 is attached.
+- The stock rule `/usr/lib/udev/rules.d/85-hplj10xx.rules` has its `RUN+="hplj1020"` hook
+  neutralised (only its `SYMLINK+="hplj1020-%n"` is kept) to avoid a race between the
+  broken backgrounded helper and the systemd unit.
+
 Manual upload (useful for testing):
 
 ```bash
 # via the CUPS usb backend, no usblp needed
 sudo DEVICE_URI='usb://HP/LaserJet%201020?serial=<PRINTER_SERIAL>' \
      /usr/lib/cups/backend/usb 1 1 1 1 '' /var/lib/foo2zjs/firmware/sihp1020.dl
+```
+
+To run the resilient loader manually:
+
+```bash
+sudo /usr/local/sbin/hplj1020-firmware-upload
 ```
 
 ### Prevent HPLIP from fighting foo2zjs
@@ -142,13 +177,15 @@ sudo udevadm control --reload-rules
 ## Persistence across power cycles
 
 Firmware lives in volatile RAM, so it must be re-uploaded after every printer power-on.
-The udev rule handles USB attach. If you power the printer on/off **without** touching the
-USB cable, some firmwares still trigger a USB re-enumeration, but to be safe you can also
-re-run the loader or re-plug the cable.
+The udev rule (or the resilient loader) handles USB attach. If you power the printer
+on/off **without** touching the USB cable, some firmwares still trigger a USB
+re-enumeration, but to be safe you can also re-run the loader or re-plug the cable.
 
 To force the loader on demand:
 
 ```bash
 sudo udevadm trigger --action=add --sysname-match='1-9'   # adjust to your USB path
 # or simply re-plug the USB cable
+# or run the resilient loader directly
+sudo /usr/local/sbin/hplj1020-firmware-upload
 ```

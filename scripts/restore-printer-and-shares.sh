@@ -62,6 +62,9 @@ fi
 rm -f /usr/share/hplip/data/firmware/*.fw.gz 2>/dev/null || true
 udevadm control --reload-rules 2>/dev/null || true
 
+echo "==> 3b/9 Installing the resilient firmware auto-upload (systemd unit + udev rule)"
+bash "$ROOT_DIR/scripts/install-firmware-loader.sh"
+
 echo "==> 4/9 Creating the CUPS print queue"
 URI="$(/usr/lib/cups/backend/usb 2>/dev/null | awk '/LaserJet.*1020/{print $2; exit}')"
 if [[ -z "${URI:-}" ]]; then
@@ -159,7 +162,9 @@ systemctl enable --now cups smbd nmbd wsdd
 systemctl restart smbd nmbd 2>/dev/null || true
 
 echo "==> 9/9 Uploading firmware now (so it prints without a power cycle)"
-SUBSYSTEM=usb /usr/lib/udev/hplj1020 2>/dev/null || true
+if [[ -x /usr/local/sbin/hplj1020-firmware-upload ]]; then
+  /usr/local/sbin/hplj1020-firmware-upload || true
+fi
 udevadm trigger --action=add --sysname-match='1-9' 2>/dev/null || true
 sleep 1
 
